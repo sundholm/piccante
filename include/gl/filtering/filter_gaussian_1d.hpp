@@ -90,6 +90,11 @@ FilterGLGaussian1D::~FilterGLGaussian1D()
         delete weights;
         weights = NULL;
     }
+    if(pg != NULL) {
+        delete pg;
+        pg = NULL;
+    }
+
 }
 
 void FilterGLGaussian1D::Update(float sigma)

@@ -93,7 +93,7 @@ void FilterGLSlicer::FragmentShader()
 
 void FilterGLSlicer::InitShaders()
 {
-    filteringProgram.setup(glw::version("400"), vertex_source, fragment_source);
+    filteringProgram.setup(glw::version("330"), vertex_source, fragment_source);
 
 #ifdef PIC_DEBUG
     printf("[FilterGLSlicer Shader log]\n%s\n", filteringProgram.log().c_str());

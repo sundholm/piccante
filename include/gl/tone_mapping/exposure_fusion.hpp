@@ -22,6 +22,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #include "gl/filtering/filter_exposure_fusion_weights.hpp"
 #include "gl/filtering/filter_op.hpp"
 
+//#define PIC_DEBUG
 namespace pic {
 
 /**
@@ -60,10 +61,37 @@ public:
 
     ~ExposureFusionGL()
     {
-        if(flt_lum != NULL) {
-            delete flt_lum;
-            flt_lum = NULL;
-        }
+
+        delete lum;
+        lum = NULL;
+
+        delete weights;
+        weights = NULL;
+
+        delete flt_lum;
+        flt_lum = NULL;
+
+        delete remove_negative;
+        remove_negative = NULL;
+
+        delete convert_zero_to_one;
+        convert_zero_to_one = NULL;
+
+        delete pW;
+        pW = NULL;
+
+        delete pI;
+        pI = NULL;
+
+        delete pOut;
+        pOut = NULL;
+
+        delete acc;
+        acc = NULL;
+
+        delete flt_weights;
+        flt_weights = NULL;
+
     }
 
     /**
@@ -94,21 +122,27 @@ public:
 
         *acc = 0.0f;
 
+
+
         if(flt_weights == NULL) {
             flt_weights = new FilterGLExposureFusionWeights(wC, wE, wS);
         }
+
+
 
         for(int j = 0; j < n; j++) {
             #ifdef PIC_DEBUG
                 printf("Processing image %d\n", j);
             #endif
 
+            // Process allocates new memory, remember to free
             lum = flt_lum->Process(SingleGL(imgIn[j]), lum);
-
             weights = flt_weights->Process(DoubleGL(lum, imgIn[j]), weights);
 
             *acc += *weights;
         }
+
+
 
         convert_zero_to_one->Process(SingleGL(acc), acc);
 
@@ -132,6 +166,8 @@ public:
         pOut->SetValue(0.0f);
 
         for(int j = 0; j < n; j++) {
+
+            // Process allocates new memory, remember to free
             lum = flt_lum->Process(SingleGL(imgIn[j]), lum);
             weights = flt_weights->Process(DoubleGL(lum, imgIn[j]), weights);
 
@@ -142,16 +178,21 @@ public:
             pI->Update(imgIn[j]);
 
             pI->Mul(pW);
-
             pOut->Add(pI);
+
         }
+
 
         #ifdef PIC_DEBUG
             printf(" ok\n");
         #endif
 
+
+
+
         //final result
         imgOut = pOut->Reconstruct(imgOut);
+
         imgOut = remove_negative->Process(SingleGL(imgOut), imgOut);
 
         return imgOut;

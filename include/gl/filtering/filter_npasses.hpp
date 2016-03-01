@@ -35,6 +35,7 @@ public:
      * @brief FilterGLNPasses
      */
     FilterGLNPasses();
+    ~FilterGLNPasses();
 
     virtual ImageGL *SetupAuxN(ImageGLVec imgIn, ImageGL *imgOut);
 
@@ -66,6 +67,14 @@ FilterGLNPasses::FilterGLNPasses(): FilterGL()
 {
     imgTmp[0] = imgTmp[1] = NULL;
     target = GL_TEXTURE_2D;
+}
+
+FilterGLNPasses::~FilterGLNPasses()
+{
+    delete imgTmp[1];
+    imgTmp[1] = NULL;
+    delete imgTmp[0];
+    imgTmp[0] = NULL;
 }
 
 void FilterGLNPasses::InsertFilter(FilterGL *flt)
@@ -125,8 +134,11 @@ ImageGL *FilterGLNPasses::Process(ImageGLVec imgIn, ImageGL *imgOut)
         return imgOut;
     }
 
+
     //Allocate FBOs
     imgOut = SetupAuxN(imgIn, imgOut);
+
+
 
     filters[0]->ChangePass(0, filters.size());
     filters[0]->Process(imgIn, imgTmp[0]);
@@ -136,6 +148,7 @@ ImageGL *FilterGLNPasses::Process(ImageGLVec imgIn, ImageGL *imgOut)
         imgIn[0] = imgTmp[(i + 1) % 2];
         filters[i]->Process(imgIn, imgTmp[i % 2]);
     }
+
 
     return imgOut;
 }

@@ -162,37 +162,42 @@ PyramidGL::~PyramidGL()
     for(unsigned int i = 0; i < stack.size(); i++) {
         if(stack[i] != NULL) {
             delete stack[i];
+            stack[i] = NULL;
+        }
+    }
+    for(unsigned int i = 0; i < trackerUp.size(); i++) {
+        if(trackerUp[i] != NULL) {
+            delete trackerUp[i];
+            trackerUp[i] = NULL;
+        }
+    }
+    for(unsigned int i = 0; i < trackerRec.size(); i++) {
+        if(trackerRec[i] != NULL) {
+            delete trackerRec[i];
+            trackerRec[i] = NULL;
         }
     }
 
-    if(flt_gauss != NULL) {
-        delete flt_gauss;
-        flt_gauss = NULL;
-    }
+    delete flt_gauss;
+    flt_gauss = NULL;
 
-    if(flt_sampler != NULL) {
-        delete flt_sampler;
-        flt_sampler = NULL;
-    }
+    delete flt_sampler;
+    flt_sampler = NULL;
 
-    if(flt_add != NULL) {
-        delete flt_add;
-        flt_add = NULL;
-    }
+    delete flt_add;
+    flt_add = NULL;
 
-    if(flt_sub != NULL) {
-        delete flt_sub;
-        flt_sub = NULL;
-    }
+    delete flt_sub;
+    flt_sub = NULL;
 
-    if(flt_blend != NULL) {
-        delete flt_blend;
-        flt_blend = NULL;
-    }
+    delete flt_blend;
+    flt_blend = NULL;
+
 }
 
 void PyramidGL::InitFilters()
 {
+
     if(flt_gauss == NULL) {
         flt_gauss = new FilterGLGaussian2D(1.0f);
     }
@@ -309,6 +314,8 @@ void PyramidGL::Update(ImageGL *img)
     ImageGL *tmpD = NULL;
     ImageGL *tmpImg = img;
 
+
+
     int levels = MAX(log2(MIN(tmpImg->width, tmpImg->height)) - limitLevel, 1);
 
     for(int i = 0; i < levels; i++) {
@@ -328,6 +335,7 @@ void PyramidGL::Update(ImageGL *img)
 
         tmpImg = tmpD;
     }
+
 }
 
 ImageGL *PyramidGL::Reconstruct(ImageGL *imgOut)
@@ -339,12 +347,13 @@ ImageGL *PyramidGL::Reconstruct(ImageGL *imgOut)
     int n = stack.size() - 1;
     ImageGL *tmp = stack[n];
 
+
     if(trackerRec.empty()) {
         for(int i = n; i >= 2; i--) {
             ImageGL *tmp2 = flt_add->Process(DoubleGL(stack[i - 1], tmp), NULL);
             trackerRec.push_back(tmp2);
-            tmp = tmp2;
-        }
+            tmp = tmp2;         
+        }    
     } else {
         int c = 0;
 
@@ -354,6 +363,7 @@ ImageGL *PyramidGL::Reconstruct(ImageGL *imgOut)
             c++;
         }
     }
+
 
     imgOut = flt_add->Process(DoubleGL(stack[0], tmp), imgOut);
 
@@ -378,7 +388,9 @@ void PyramidGL::Mul(const PyramidGL *pyr)
     }
 
     for(unsigned int i = 0; i < stack.size(); i++) {
+
         *stack[i] *= *pyr->stack[i];
+
     }
 }
 
@@ -388,9 +400,11 @@ void PyramidGL::Add(const PyramidGL *pyr)
         return;
     }
 
-    for(unsigned int i = 0; i < stack.size(); i++) {
+    for(unsigned int i = 0; i < stack.size(); i++) {     
         *stack[i] += *pyr->stack[i];
+
     }
+
 }
 
 void PyramidGL::Blend(PyramidGL *pyr, PyramidGL *weight)

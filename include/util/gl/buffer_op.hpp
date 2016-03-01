@@ -240,6 +240,7 @@ void BufferOpGL::InitShaders()
 
     fragment_source = GLW_STRINGFY
                       (
+                          precision lowp float;  \n
                           uniform sampler2D u_tex_0; \n
                           uniform sampler2D u_tex_1; \n
                           uniform vec4      u_val_0; \n
@@ -268,7 +269,7 @@ void BufferOpGL::InitShaders()
     fragment_source.replace(processing_found, 21, strOp);
 
     std::string prefix;
-    prefix += glw::version("400");
+    prefix += glw::version("330");
 
     filteringProgram.setup(prefix, vertex_source, fragment_source);
 
@@ -350,6 +351,7 @@ void BufferOpGL::Process(GLuint tex0, GLuint tex1, GLuint texOut, int width, int
 
     fbo->create(width, height, 1, false, texOut);
 
+
     //Rendering
     fbo->bind();
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
@@ -364,7 +366,10 @@ void BufferOpGL::Process(GLuint tex0, GLuint tex1, GLuint texOut, int width, int
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, tex1);
 
+
     quad->Render();
+
+
 
     //Fbo
     fbo->unbind();
@@ -372,12 +377,19 @@ void BufferOpGL::Process(GLuint tex0, GLuint tex1, GLuint texOut, int width, int
     //Shaders
     glw::bind_program(0);
 
+
+
+
     //Textures
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+
 }
 
 } // end namespace pic

@@ -222,6 +222,58 @@ GLuint generateTexture2DU32GL(int width, int height, int channels, int *data = N
     return texture;
 }
 
+/** WARNING This function is not from piccante, but my own hax, dont use it
+ * @brief generateTexture2DU8GL
+ * @param width
+ * @param height
+ * @param channels
+ * @return
+ */
+GLuint generateTexture2DU8GL(int width, int height, int channels, uint8_t *data = NULL, bool mipmap = false)
+{
+    if(width < 1 || height < 1 || channels < 1) {
+        return 0;
+    }
+
+    GLuint texture;
+
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    if(mipmap) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    } else {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    int mode, modeInternalFormat;
+    getModesGL(channels, mode, modeInternalFormat);
+    glTexImage2D(GL_TEXTURE_2D, 0, modeInternalFormat, width, height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, data);
+
+    if(mipmap) {
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    return texture;
+}
+
+void updateTexture2DU8GL(GLuint texture, int width, int height, uint8_t *data, int offsetX = 0, int offsetY = 0){
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+        glTexSubImage2D(GL_TEXTURE_2D, 0, offsetX, offsetY, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 } // end namespace pic
 
 #endif /* PIC_UTIL_GL_BUFFER_ALLOCATION_HPP */

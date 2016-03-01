@@ -176,7 +176,9 @@ FilterGLOp::FilterGLOp(std::string op, bool bTexelFetch = false,
     this->op = op;
     this->bTexelFetch = bTexelFetch;
 
-    if(!bTexelFetch) {
+    if(!bTexelFetch) {         
+        if(quad != NULL)
+            delete quad;
         quad = new QuadGL(true);
         vertex_source = QuadGL::getVertexProgramWithTexCoordinates();
     }

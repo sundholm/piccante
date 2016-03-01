@@ -89,8 +89,11 @@ protected:
     {
         BufferOpsGL *ops = BufferOpsGL::getInstance();
 
+
         ops->list[op]->Update(a);
+
         ops->list[op]->Process(getTexture(), 0, getTexture(), width, height);
+
     }
 
     /**
@@ -122,8 +125,14 @@ protected:
         ImageGL ret(frames, width, height, channels, IMG_GPU, target);
         BufferOpsGL *ops = BufferOpsGL::getInstance();
 
+
+
         ops->list[op]->Update(a);
+
+
         ops->list[op]->Process(getTexture(), 0, ret.getTexture(), width, height);
+
+
 
         return ret;
     }
@@ -537,6 +546,10 @@ public:
      * @return
      */
     ImageGL operator /(const float &a);
+
+    // prototypes for uint8 extended ImageGL
+    bool loadToGPU_RGB8(uint8_t *data);
+    bool loadFromGPU_RGB8(uint8_t *data);
 };
 
 ImageGL::ImageGL() : Image()
@@ -662,6 +675,7 @@ ImageGL::ImageGL(int frames, int width, int height, int channels,
 
 ImageGL::~ImageGL()
 {
+    DestroyGL();
     Destroy();
 }
 
@@ -758,6 +772,7 @@ void ImageGL::DestroyGL()
             stack[i] = 0;
         }
     }
+
 }
 
 ImageGL *ImageGL::AllocateSimilarOneGL()
@@ -999,6 +1014,63 @@ ImageGL ImageGL::operator /(const float &a)
 {
     return newOperatorConst(a, BOGL_DIV_CONST);
 }
+
+// Minimal extension of ImageGL for working with uint8 RBG images
+// (and RGBAF32 internally)
+//
+
+// When I have time I should put in its own class extending ImageGL
+
+// Usage:
+//
+// ImageGL* imgGL = new ImageGL(frames, width, height, channels, NULL);
+// imgGL->loadToGPU_RGB8(data8UI);
+// "do some gpu stuff here"
+// imgGL->loadFromGPU_RGB8(data8UI);
+
+bool ImageGL::loadToGPU_RGB8(uint8_t *data){
+     if(!this->texture){
+         this->texture = pic::generateTexture2DU8GL(width, height, channels, data);
+     }
+     else {
+         pic::updateTexture2DU8GL(this->texture, width, height, data);
+     }
+     this->target = GL_TEXTURE_2D;
+     mode = IMG_GPU;
+
+     AllocateAux();
+     return true;
+}
+
+
+
+
+bool ImageGL::loadFromGPU_RGB8(uint8_t *data){
+    if(!this->texture) {
+        #ifdef PIC_DEBUG
+            printf("This texture can not be trasferred from GPU memory\n");
+        #endif
+        return false;
+    }
+
+    if(data == NULL) {
+        #ifdef PIC_DEBUG
+            printf("RAM memory allocated: %d %d %d %d\n", width, height, channels, frames);
+        #endif
+        return false;
+    }
+
+
+
+    bindTexture();
+    glGetTexImage(target, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    unBindTexture();
+
+
+    return true;
+}
+
+
 
 } // end namespace pic
 

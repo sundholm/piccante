@@ -78,6 +78,9 @@ public:
         if(quad != NULL) {
             delete quad;
         }
+        if(fbo != NULL) {
+            delete fbo;
+        }
     }
 
     /**
@@ -154,6 +157,7 @@ ImageGL *FilterGL::Process(ImageGLVec imgIn, ImageGL *imgOut)
         return imgOut;
     }
 
+
     if(imgIn[0] == NULL) {
         return imgOut;
     }
@@ -200,6 +204,7 @@ ImageGL *FilterGL::Process(ImageGLVec imgIn, ImageGL *imgOut)
     }
 
     return imgOut;
+
 }
 
 

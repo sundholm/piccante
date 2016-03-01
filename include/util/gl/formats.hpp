@@ -42,7 +42,7 @@ inline void getModesGL(int channels, int &mode, int &modeInternalFormat)
 
     case 3: {
         mode = GL_RGB;
-        modeInternalFormat = GL_RGB32F;
+        modeInternalFormat = GL_RGBA32F; //GL_RGB32F
     }
     break;
 

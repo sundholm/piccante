@@ -204,7 +204,10 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #pragma comment( lib, "vfw32" )
 #endif
 
+
+
 // Qt stuff
+#define PIC_DISABLE_QT
 #include "qt.hpp"
 
 // base stuff

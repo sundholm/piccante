@@ -39,6 +39,7 @@ public:
      * @brief FilterGLGaussian2D
      */
     FilterGLGaussian2D();
+    ~FilterGLGaussian2D();
 
     /**
      * @brief FilterGLGaussian2D
@@ -94,6 +95,8 @@ FilterGLGaussian2D::FilterGLGaussian2D(): FilterGLNPasses()
     InsertFilter(filter);
 }
 
+
+
 FilterGLGaussian2D::FilterGLGaussian2D(float sigma): FilterGLNPasses()
 {
     target = GL_TEXTURE_2D;
@@ -101,6 +104,11 @@ FilterGLGaussian2D::FilterGLGaussian2D(float sigma): FilterGLNPasses()
     filter = new FilterGLGaussian1D(sigma, 0, target);
     InsertFilter(filter);
     InsertFilter(filter);
+}
+
+FilterGLGaussian2D::~FilterGLGaussian2D(){
+    delete filter;
+    filter = NULL;
 }
 
 void FilterGLGaussian2D::Update(float sigma)

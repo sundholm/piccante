@@ -28,13 +28,22 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #else /* PIC_MAC_OS_X or PIC_UNIX */
 
+//#include <GL/gl.h>
+//#include <GL/glext.h>
+#include <GL/glew.h>
+
+
+//#include "../opengl_common_code/gl_core_4_0.h"
+
 #ifdef PIC_QT
-#include <QtGui/QOpenGLFunctions>
-#include <QtGui/QOpenGLContext>
-#include <QtGui/QOpenGLPaintDevice>
+//#include <QtGui/QOpenGLFunctions>
+//#include <QtGui/QOpenGLContext>
+//#include <QtGui/QOpenGLPaintDevice>
 #endif
 
-#include <OpenGL/OpenGL.h>
+
+
+//#include <OpenGL/OpenGL.h>
 
 #endif /* os selection */
 

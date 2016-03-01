@@ -47,6 +47,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #include "io/exr.hpp"
 #include "util/io.hpp"
 
+
 namespace pic {
 
 /**
